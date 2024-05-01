@@ -1,10 +1,11 @@
 import * as feed from './feed';
 
-const image = 'https://foo.bar';
+const image = 'https://github.com/alexander-heimbuch/cloudflare-rss-feed-proxy/blob/main/assets/cover.jpg?raw=true';
+const feedUrl = 'https://www.patreon.com/rss/maris_art?auth=LenZ3W71WcgUxpvZ12gxlxpyw4fotYQZ';
 
 export default {
 	async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
-		const result = await feed.parse('https://www.patreon.com/rss/maris_art?auth=LenZ3W71WcgUxpvZ12gxlxpyw4fotYQZ');
+		const result = await feed.parse(feedUrl);
 
 		console.log(result.rss.channel['itunes:image']);
 		result.rss.channel.image.url = image;
