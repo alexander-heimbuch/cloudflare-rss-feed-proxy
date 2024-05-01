@@ -1,18 +1,20 @@
-/**
- * Welcome to Cloudflare Workers! This is your first worker.
- *
- * - Run `npm run dev` in your terminal to start a development server
- * - Open a browser tab at http://localhost:8787/ to see your worker in action
- * - Run `npm run deploy` to publish your worker
- *
- * Bind resources to your worker in `wrangler.toml`. After adding bindings, a type definition for the
- * `Env` object can be regenerated with `npm run cf-typegen`.
- *
- * Learn more at https://developers.cloudflare.com/workers/
- */
+import * as feed from './feed';
+
+const image = 'https://foo.bar';
 
 export default {
 	async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
-		return new Response('Hello World!');
+		const result = await feed.parse('https://www.patreon.com/rss/maris_art?auth=LenZ3W71WcgUxpvZ12gxlxpyw4fotYQZ');
+
+		console.log(result.rss.channel['itunes:image']);
+		result.rss.channel.image.url = image;
+		result.rss.channel['itunes:image']['@_href'] = image;
+
+		return new Response(feed.build(result), {
+			headers: {
+				"content-disposition": "filename=feed.rss",
+				'content-type': 'application/rss+xml',
+			},
+		});
 	},
 };
